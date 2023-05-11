@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
 const tf = require('@tensorflow/tfjs-node');
 const tfvis = require('@tensorflow/tfjs-node');
-const {node, tensorboard} = require('@tensorflow/tfjs-node');
+const { TensorBoard } = require('@tensorflow/tfjs-node/dist/callbacks');
 const fs = require('fs');
 
 
@@ -86,7 +86,7 @@ const dataset = tf.data.array(data);
 
   // train the model
   const logDir = './logs'; // directory to store the log files
-  const tensorboardCallback = tensorboard.callback({logDir});
+  const tensorboardCallback = tensorBoard.callback({logDir});
   const history = await model.fit(featuresTensor, labelsTensor, {
     epochs: NUM_EPOCHS,
     batchSize: BATCH_SIZE,
