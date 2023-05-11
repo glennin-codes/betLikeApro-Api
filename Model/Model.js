@@ -1,19 +1,40 @@
 const fetch = require('node-fetch');
 const tf = require('@tensorflow/tfjs-node');
-const tfvis = require('@tensorflow/tfjs-vis');
-const tensorboard = require('@tensorflow/tfjs-node').tensorboard;
-
+const tfvis = require('@tensorflow/tfjs-node');
+const {node, tensorboard} = require('@tensorflow/tfjs-node');
 const fs = require('fs');
 
-async function run(req, res) {
-  const data = await fetch("matches.json").then(response => response.json());
-  const TRAIN_TEST_RATIO = 0.8; // use 80% of the data for training
 
-  // convert our data to a TensorFlow.js dataset
-  const dataset = tf.data.array(data.matches);
+async function run(req, res) {
+// read the file contents
+const contents = fs.readFileSync('matches.json');
+let data;
+try {
+  data = JSON.parse(contents);
+} catch (e) {
+  console.error('Error parsing JSON:', e);
+  return res.status(500).json({ error: 'Error parsing JSON file' });
+}
+
+if (!Array.isArray(data)) {
+  console.warn('Warning: "matches" property is not an array, attempting to convert to array...');
+
+  // Attempt to convert to array
+  data= Object.values(data);
+
+  if (!Array.isArray(data)) {
+    console.error('Error: "matches" property is not an array');
+    return res.status(500).json({ error: '"matches" property is not an array' });
+  }
+}
+
+const TRAIN_TEST_RATIO = 0.8; // use 80% of the data for training
+
+// convert our data to a TensorFlow.js dataset
+const dataset = tf.data.array(data);
 
   // shuffle our dataset
-  const shuffledDataset = dataset.shuffle(data.count);
+  const shuffledDataset = dataset.shuffle(data.length);
 
   // split our dataset into training and testing sets
   const trainDataset = shuffledDataset.take(Math.floor(data.count * TRAIN_TEST_RATIO));
