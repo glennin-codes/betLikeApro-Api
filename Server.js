@@ -3,6 +3,7 @@ const express = require('express')
 const cors=require('cors');
 const fetchAllMatches = require('./API/fetchData');
 const run = require('./Model/Model');
+const getMatches = require('./API/Scheduled');
 
 const app = express();
 const PORT=8080;
@@ -13,6 +14,7 @@ app.use(express.urlencoded({limit:'200mb', extended:true}))
 
 app.get('/fetchData',fetchAllMatches);
 app.get('/teachModel',run);
+app.get('/matches',getMatches);
 app.get('/', function (req, res) {
   res.send('bet like a pro ::::;powered by glennin technology')
 })

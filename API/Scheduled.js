@@ -13,3 +13,4 @@ async function getMatches() {
     throw new Error('Unable to fetch matches');
   }
 }
+module.exports=getMatches;
